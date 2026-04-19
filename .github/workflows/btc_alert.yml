@@ -15,8 +15,6 @@ jobs:
     steps:
       - name: 코드 가져오기
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Python 설치
         uses: actions/setup-python@v4
@@ -29,21 +27,15 @@ jobs:
       - name: 스크립트 실행
         run: python btc_monitor.py
 
-      - name: 엑셀 파일 커밋 및 푸시
+      - name: CSV 파일 커밋 및 푸시
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # 충돌 방지: GitHub 최신 파일 받아온 후 스크립트 재실행
-          git stash
-          git pull origin main
-          git stash drop || true
-          python btc_monitor.py
-          
-          git add btc_history.xlsx
+          git add btc_history.csv
           if git diff --staged --quiet; then
             echo "변경사항 없음"
           else
             git commit -m "BTC update: $(date +'%Y-%m-%d')"
+            git pull --rebase origin main
             git push
           fi
