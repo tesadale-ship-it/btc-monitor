@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: 코드 가져오기
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Python 설치
         uses: actions/setup-python@v4
@@ -23,6 +25,10 @@ jobs:
 
       - name: 라이브러리 설치
         run: pip install -r requirements.txt
+
+      - name: GitHub 최신 CSV 먼저 받기
+        run: |
+          git pull origin main
 
       - name: 스크립트 실행
         run: python btc_monitor.py
@@ -36,6 +42,5 @@ jobs:
             echo "변경사항 없음"
           else
             git commit -m "BTC update: $(date +'%Y-%m-%d')"
-            git pull --rebase origin main
             git push
           fi
